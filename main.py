@@ -20,7 +20,8 @@ import matplotlib
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from torchvision.models import wide_resnet50_2, resnet18
+from torchvision.models import resnet18, resnet50, wide_resnet50_2
+from models.efficientnet import efficientnet_b0, efficientnet_b3
 import datasets.mvtec as mvtec
 
 
@@ -31,9 +32,9 @@ device = torch.device('cuda' if use_cuda else 'cpu')
 
 def parse_args():
     parser = argparse.ArgumentParser('PaDiM')
-    parser.add_argument('--data_path', type=str, default='D:/dataset/mvtec_anomaly_detection')
+    parser.add_argument('--data_path', type=str, default='/Users/liubao/Downloads/mvtec_anomaly_detection')
     parser.add_argument('--save_path', type=str, default='./mvtec_result')
-    parser.add_argument('--arch', type=str, choices=['resnet18', 'wide_resnet50_2'], default='wide_resnet50_2')
+    parser.add_argument('--arch', type=str, choices=['wide_resnet50_2', 'resnet18', 'resnet50', 'efficientnet_b0', 'efficientnet_b3'], default='resnet18')
     return parser.parse_args()
 
 
@@ -43,8 +44,20 @@ def main():
 
     # load model
     if args.arch == 'resnet18':
-        model = resnet18(pretrained=True, progress=True)
+        model = resnet18(pretrained=True)
         t_d = 448
+        d = 100
+    elif args.arch == 'resnet50':
+        model = resnet50(pretrained=True)
+        t_d = 896
+        d = 200
+    elif args.arch == 'efficientnet_b0':
+        model = efficientnet_b0(pretrained=True, progress=True, map_location=device)
+        t_d = 80
+        d = 60
+    elif args.arch == 'efficientnet_b3':
+        model = efficientnet_b3(pretrained=True, progress=True, map_location=device)
+        t_d = 104
         d = 100
     elif args.arch == 'wide_resnet50_2':
         model = wide_resnet50_2(pretrained=True, progress=True)
